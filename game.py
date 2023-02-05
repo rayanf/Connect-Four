@@ -81,9 +81,10 @@ class game:
         self.board = np.zeros((self.n,self.m))
         self.updateScreen()
     
-    def playerVsAI(self):
+    def playerVsAI(self,mode):
         self.reset()
-        AI = MinMax(2,1)
+        if mode == 'MinMax':
+            AI = MinMax(1,2)
 
         turn = True
         while True:
@@ -148,10 +149,12 @@ class game:
 
                     self.drop(col,turn)
                     turn = not turn
-    def AIvsAI(self):
+    def AIvsAI(self,mode1,mode2):
         self.reset()
-        AI1 = MinMax(1,2)
-        AI2 = MinMax(2,1)
+        if mode1 == 'MinMax':
+            AI1 = MinMax(1,2)
+        if mode2 == 'MinMax':
+            AI2 = MinMax(2,1)
 
         turn = True
         while True:

@@ -11,7 +11,7 @@ class MinMax:
         self.PeaceEnemy = peaceEnemy
         
     def move(self,state):
-        ch = self.minMax(state,4,self.alpha,self.beta,self.Peace)[0]
+        ch = self.minMax(state,5,self.alpha,self.beta,self.Peace)[0]
         return ch
 
     def minMax(self,state,depth,alpha,beta,turn):
@@ -25,7 +25,6 @@ class MinMax:
                     return (None,0)
             else:
                 return (None,self.stateScoreEval(state))
-        print(state)
         if turn == self.Peace:
             value = np.NINF
             column = np.random.choice(self.getChoices(state))

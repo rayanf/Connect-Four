@@ -5,20 +5,20 @@ from game import game
 
 def main():
     mode = int(input("Choose mode -> 1.Player vs Player    2.Player vs AI    3.AI vs AI: "))
-    # n,m = input("Enter board size: ").split()
-    # n = int(n)
-    # m = int(m)
+    n,m = input("Enter board size: ").split()
+    n = int(n)
+    m = int(m)
     if mode == 1:
-        g = game(6,7)
+        g = game(n,m)
         g.playerVsPlayer()
 
     elif mode == 2:
-        g = game(6,7)
-        g.playerVsAI()
+        g = game(n,m)
+        g.playerVsAI('MinMax')
     
     elif mode == 3:
-        g = game(6,7)
-        g.AIvsAI()
+        g = game(n,m)
+        g.AIvsAI('MinMax','MinMax')
 
 
 
