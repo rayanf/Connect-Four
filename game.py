@@ -5,10 +5,11 @@ import sys
 from MinMax import MinMax
 # 4 connected game
 class game:
-    def __init__(self, n, m):
+    def __init__(self, n, m,mode='MinMax'):
         self.board = np.zeros((n,m))
         self.n = n
         self.m = m
+        self.mode = mode
 
         pygame.init()
         self.screen = pygame.display.set_mode((m*90,n*90))
@@ -81,42 +82,43 @@ class game:
         self.board = np.zeros((self.n,self.m))
         self.updateScreen()
     
-    def playerVsAI(self,mode):
-        self.reset()
-        if mode == 'MinMax':
-            AI = MinMax(1,2)
+    def playerVsAI(self,mode,modeGame = 'MinMax'):
+        if modeGame == 'MinMax':
+            self.reset()
+            if mode == 'MinMax':
+                AI = MinMax(1,2)
 
-        turn = True
-        while True:
-            self.updateScreen()
+            turn = True
+            while True:
+                self.updateScreen()
 
 
-            win = self.checkWin()
-            tie = self.checkTie()
-            if win:
+                win = self.checkWin()
+                tie = self.checkTie()
+                if win:
+                    if turn:
+                        print("lose")
+                    else:
+                        print("win")
+                    pygame.quit()
+                    sys.exit()
+                elif tie:
+                    print("tie")
+                    pygame.quit()
+                    sys.exit()
+
                 if turn:
-                    print("lose")
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            posx = event.pos[0]
+                            col = int(math.floor(posx/90))
+
+                            self.drop(col,turn)
+                            turn = not turn
                 else:
-                    print("win")
-                pygame.quit()
-                sys.exit()
-            elif tie:
-                print("tie")
-                pygame.quit()
-                sys.exit()
-
-            if turn:
-                for event in pygame.event.get():
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        posx = event.pos[0]
-                        col = int(math.floor(posx/90))
-
-                        self.drop(col,turn)
-                        turn = not turn
-            else:
-                col = AI.move(self.board)
-                self.drop(col,turn)
-                turn = not turn
+                    col = AI.move(self.board)
+                    self.drop(col,turn)
+                    turn = not turn
 
     def playerVsPlayer(self):
         self.reset()
@@ -149,42 +151,74 @@ class game:
 
                     self.drop(col,turn)
                     turn = not turn
-    def AIvsAI(self,mode1,mode2):
-        self.reset()
-        if mode1 == 'MinMax':
-            AI1 = MinMax(1,2)
-        if mode2 == 'MinMax':
-            AI2 = MinMax(2,1)
+    def AIvsAI(self,mode1,mode2,mode='MinMax'):
+        if mode == 'MinMax':
+            self.reset()
+            if mode1 == 'MinMax':
+                AI1 = MinMax(1,2,)
+            if mode2 == 'MinMax':
+                AI2 = MinMax(2,1)
 
-        turn = True
-        while True:
-            self.updateScreen()
+            turn = True
+            while True:
+                self.updateScreen()
 
 
-            win = self.checkWin()
-            tie = self.checkTie()
+                win = self.checkWin()
+                tie = self.checkTie()
 
-            if win:
+                if win:
+                    if turn:
+                        print("lose")
+                    else:
+                        print("win")
+                    pygame.quit()
+                    sys.exit()
+                elif tie:
+                    print("tie")
+                    pygame.quit()
+                    sys.exit()
+
                 if turn:
-                    print("lose")
+                    col = AI1.move(self.board)
+                    self.drop(col,turn)
+                    turn = not turn
+
                 else:
-                    print("win")
-                pygame.quit()
-                sys.exit()
-            elif tie:
-                print("tie")
-                pygame.quit()
-                sys.exit()
+                    col = AI2.move(self.board)
+                    self.drop(col,turn)
+                    turn = not turn
+        else:
+            self.reset()
+            AI1 = MinMax(1,2,mode1)
+            AI2 = MinMax(2,1,mode2)
 
-            if turn:
-                col = AI1.move(self.board)
-                self.drop(col,turn)
-                turn = not turn
+            turn = True
+            while True:
+                self.updateScreen()
 
-            else:
-                col = AI2.move(self.board)
-                self.drop(col,turn)
-                turn = not turn
+
+                win = self.checkWin()
+                tie = self.checkTie()
+
+                if win:
+                    if turn:
+                        return 2
+                    else:
+                        return 1
+                elif tie:
+                    return 3
+
+
+                if turn:
+                    col = AI1.move(self.board)
+                    self.drop(col,turn)
+                    turn = not turn
+
+                else:
+                    col = AI2.move(self.board)
+                    self.drop(col,turn)
+                    turn = not turn
 
 if __name__ == "__main__":
     g = game(6,7)

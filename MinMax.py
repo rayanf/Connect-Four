@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 
 
 class MinMax:
-    def __init__(self,peace,peaceEnemy):
+    def __init__(self,peace,peaceEnemy,mode='MinMax'):
         self.alpha = np.NINF
         self.beta = np.Inf
         self.Peace = peace
         self.PeaceEnemy = peaceEnemy
+        self.mode = mode
         
     def move(self,state):
         ch = self.minMax(state,5,self.alpha,self.beta,self.Peace)[0]
@@ -24,6 +25,9 @@ class MinMax:
                 else:
                     return (None,0)
             else:
+                if self.mode == 'Genetic':
+                    return (None,self.stateScoreEvalGenetic(state))
+
                 return (None,self.stateScoreEval(state))
         if turn == self.Peace:
             value = np.NINF
@@ -56,7 +60,8 @@ class MinMax:
                     break
             return column,value
 
-
+    def stateScoreEvalGenetic(self,state):
+        pass
     def stateScoreEval(self,state):
         score = 0
 
