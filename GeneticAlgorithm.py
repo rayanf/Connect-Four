@@ -109,6 +109,7 @@ class GeneticAlgorithm:
     def loadGeneration(self):
         df = pd.read_csv('generation.csv')
         self.population = df.values.tolist()
+        
     def bestIndividual(self):
         fitnessMappping = {}
         for i in range(self.populationSize):
@@ -118,7 +119,7 @@ class GeneticAlgorithm:
         return bestIndividual
 
 def main():
-    ga = GeneticAlgorithm(populationSize=100,mutationRate=0.2,selectionRate=0.5,crossoverRate=0.3,numberOfWeights=42)
+    ga = GeneticAlgorithm(populationSize=100,mutationRate=0.2,selectionRate=0.5,crossoverRate=0.3,numberOfWeights=16)
     ga.run(100)
     ga.saveGeneration()
     print(ga.bestIndividual())

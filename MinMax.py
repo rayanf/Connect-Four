@@ -25,7 +25,7 @@ class MinMax:
                 else:
                     return (None,0)
             else:
-                if self.mode == 'Genetic':
+                if self.mode != 'MinMax':
                     return (None,self.stateScoreEvalGenetic(state))
 
                 return (None,self.stateScoreEval(state))
@@ -59,9 +59,53 @@ class MinMax:
                 if alpha >= beta:
                     break
             return column,value
+    def getScoreGenetic(self,sequence):
+        pass
 
     def stateScoreEvalGenetic(self,state):
-        pass
+        score = 0
+        for i in range(len(state)):
+            for j in range(len(state[0]-3)):
+                sequence = state[i][j:j+4]
+                score += self.getScoreGenetic(sequence)
+        
+        for i in range(len(state)-3):
+            for j in range(len(state[0])):
+                sequence = state[i:i+4,j]
+                score += self.getScoreGenetic(sequence)
+
+        for i in range(len(state)-3):
+            for j in range(len(state[0])-3):
+                sequence = [state[i+k][j+k] for k in range(4)]
+                score += self.getScoreGenetic(sequence)
+        for i in range(len(state)-3):
+            for j in range(len(state[0])-3):
+                sequence = [state[i+3-k][j+k] for k in range(4)]
+                score += self.getScoreGenetic(sequence)
+
+
+        # 7 shape 
+        for i in range(len(state-2)):
+            for j in range(len(state[0]-2)):
+                if state[i:i+3][j] == self.Peace:
+                    if state[i+1][j+1] == self.Peace:
+                        if state[i+2][j] == self.Peace or state[i+2][j+2] == self.Peace:
+                            score += self.mode[-2]
+                elif state[i:i+3][j] == self.PeaceEnemy:
+                    if state[i+1][j+1] == self.PeaceEnemy:
+                        if state[i+2][j] == self.PeaceEnemy or state[i+2][j+2] == self.PeaceEnemy:
+                            score -= self.mode[-2]
+                            
+        # dictance from center
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if state[i][j] == self.Peace:
+                    score += abs(j - (len(state[0])-1)/2)
+                elif state[i][j] == self.PeaceEnemy:
+                    score -= abs(j - (len(state[0])-1)/2)
+        
+
+
     def stateScoreEval(self,state):
         score = 0
 
@@ -69,6 +113,7 @@ class MinMax:
             for j in range(len(state[0]-3)):
                 sequence = state[i][j:j+4]
                 score += self.getScore(sequence)
+
         for i in range(len(state)-3):
             for j in range(len(state[0])):
                 sequence = state[i:i+4,j]
@@ -83,6 +128,7 @@ class MinMax:
             for j in range(len(state[0])-3):
                 sequence = [state[i+3-k][j+k] for k in range(4)]
                 score += self.getScore(sequence)
+
         return score
 
     def getScore(self,sequence):
