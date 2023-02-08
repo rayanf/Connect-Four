@@ -3,7 +3,9 @@ import pygame
 import math
 import sys
 from MinMax import MinMax
-# 4 connected game
+
+
+# main class for the game that contains the board and the game logic
 class game:
     def __init__(self, n, m,mode='MinMax'):
         self.board = np.zeros((n,m))
@@ -18,7 +20,7 @@ class game:
         self.clock = pygame.time.Clock()
 
 
-
+    # function that players should call to drop a piece in a column
     def drop(self,col,myTurn):
         if myTurn:
             piece = 1
@@ -29,7 +31,8 @@ class game:
             if self.board[i][col] == 0:
                 self.board[i][col] = piece
                 break 
-
+    
+    # update the screen after each move
     def updateScreen(self):
         self.screen = pygame.display.set_mode((self.m*90,self.n*90))
         self.screen.fill((112, 146, 190))
@@ -39,6 +42,7 @@ class game:
         pygame.display.update()
         # pygame.image.save(self.screen, "screenshot.jpeg")
 
+    # draw the pieces on the board
     def drawPieces(self):
         for i in range(self.n):
             for j in range(self.m):
@@ -47,6 +51,7 @@ class game:
                 elif self.board[i][j] == 2:
                     pygame.draw.circle(self.screen, (161,35,96), (j*90+45, i*90+45), 40)
 
+    # draw the lines on the board
     def drawLines(self):
         for i in range(self.n):
             pygame.draw.line(self.screen, (0,0,0), (0, i*90), (self.m*90, i*90), 3)
@@ -54,7 +59,8 @@ class game:
             pygame.draw.line(self.screen, (0,0,0), (i*90, 0), (i*90, self.n*90), 3)
 
 
-
+    # check if there is a winner
+    # check vertically, horizontally and diagonally
     def checkWin(self):
         for i in range(self.n):
             for j in range(self.m):
@@ -72,6 +78,7 @@ class game:
                         if self.board[i][j] == self.board[i+1][j-1] == self.board[i+2][j-2] == self.board[i+3][j-3]:
                             return True
 
+    # check if no more empty spaces on the board and it's a tie
     def checkTie(self):
         for i in range(self.n):
             for j in range(self.m):
@@ -79,11 +86,13 @@ class game:
                     return False
         return True
     
+    # reset the board to empty
     def reset(self):
         self.board = np.zeros((self.n,self.m))
         if self.mode == 'MinMax':
             self.updateScreen()
     
+    # play the game in player vs AI mode
     def playerVsAI(self,mode,modeGame = 'MinMax'):
         if modeGame == 'MinMax':
             self.reset()
@@ -91,10 +100,11 @@ class game:
                 AI = MinMax(1,2)
 
             turn = True
+            # main loop of the game
             while True:
                 self.updateScreen()
 
-
+                # check if there is a winner or a tie
                 win = self.checkWin()
                 tie = self.checkTie()
                 if win:
@@ -108,7 +118,7 @@ class game:
                     print("tie")
                     pygame.quit()
                     sys.exit()
-
+                # get the mouse position and drop a piece in the corresponding column if it's the player's turn
                 if turn:
                     for event in pygame.event.get():
                         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -117,11 +127,13 @@ class game:
 
                             self.drop(col,turn)
                             turn = not turn
+                # get the best move from the AI and drop a piece in the corresponding column
                 else:
                     col = AI.move(self.board)
                     self.drop(col,turn)
                     turn = not turn
 
+    # play the game in player vs player mode
     def playerVsPlayer(self):
         self.reset()
         turn = True
@@ -153,7 +165,10 @@ class game:
 
                     self.drop(col,turn)
                     turn = not turn
+
+    # play the game in AI vs AI mode
     def AIvsAI(self,mode1,mode2,mode='MinMax'):
+        # if its the minMax mode 
         if mode == 'MinMax':
             self.reset()
             if mode1 == 'MinMax':
@@ -190,6 +205,7 @@ class game:
                     col = AI2.move(self.board)
                     self.drop(col,turn)
                     turn = not turn
+        # else if the genetic algorithm called the function
         else:
             self.reset()
             AI1 = MinMax(1,2,mode1)
