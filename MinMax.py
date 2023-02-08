@@ -12,7 +12,7 @@ class MinMax:
         self.mode = mode
         
     def move(self,state):
-        ch = self.minMax(state,5,self.alpha,self.beta,self.Peace)[0]
+        ch = self.minMax(state,4,self.alpha,self.beta,self.Peace)[0]
         return ch
 
     def minMax(self,state,depth,alpha,beta,turn):
@@ -60,7 +60,38 @@ class MinMax:
                     break
             return column,value
     def getScoreGenetic(self,sequence):
-        pass
+        score = 0
+        sequence = list(sequence)
+        if sequence.count(self.Peace) == 4:
+            score += np.inf
+        elif sequence.count(self.PeaceEnemy) == 4:
+            score -= np.inf
+        elif sequence.count(self.Peace) == 3 and (sequence[0] == 0 or sequence[-1] == 0):
+            score += self.mode[1]
+        elif sequence.count(self.PeaceEnemy) == 3 and (sequence[0] == 0 or sequence[-1] == 0):
+            score -= self.mode[1]
+        elif sequence.count(self.Peace) == 3 and sequence.count(0) == 1:
+            self.mode[0]
+        elif sequence.count(self.PeaceEnemy) == 3 and sequence.count(0) == 1:
+            self.mode[0]
+        elif sequence.count(self.Peace) == 2 and sequence.count(0) == 2:
+            if sequence[0] == sequence[-1] == 0:
+                score += self.mode[2]
+            else:
+                score += self.mode[3]
+        elif sequence.count(self.PeaceEnemy) == 2 and sequence.count(0) == 2:
+            if sequence[0] == sequence[-1] == 0:
+                score -= self.mode[2]
+            else:
+                score -= self.mode[3]
+        elif sequence.count(self.Peace) == 2 and sequence.count(0) == 1:
+            if sequence[0] == self.PeaceEnemy or sequence[-1] == self.PeaceEnemy:
+                score += self.mode[4]
+
+        elif sequence.count(self.PeaceEnemy) == 2 and sequence.count(0) == 1:
+            if sequence[0] == self.Peace or sequence[-1] == self.Peace:
+                score -= self.mode[4]
+        return score
 
     def stateScoreEvalGenetic(self,state):
         score = 0
@@ -85,26 +116,26 @@ class MinMax:
 
 
         # 7 shape 
-        for i in range(len(state-2)):
-            for j in range(len(state[0]-2)):
-                if state[i:i+3][j] == self.Peace:
+        for i in range(len(state)-3):
+            for j in range(len(state[0])-3):
+                if state[i][j:j+3].all() == self.Peace:
                     if state[i+1][j+1] == self.Peace:
                         if state[i+2][j] == self.Peace or state[i+2][j+2] == self.Peace:
-                            score += self.mode[-2]
-                elif state[i:i+3][j] == self.PeaceEnemy:
+                            score += self.mode[5]
+                elif state[i][j:j+3].all() == self.PeaceEnemy:
                     if state[i+1][j+1] == self.PeaceEnemy:
                         if state[i+2][j] == self.PeaceEnemy or state[i+2][j+2] == self.PeaceEnemy:
-                            score -= self.mode[-2]
+                            score -= self.mode[5]
                             
         # dictance from center
         for i in range(len(state)):
             for j in range(len(state[0])):
                 if state[i][j] == self.Peace:
-                    score += abs(j - (len(state[0])-1)/2)
+                    score += abs(j - (len(state[0])-1)/2) * self.mode[6]
                 elif state[i][j] == self.PeaceEnemy:
-                    score -= abs(j - (len(state[0])-1)/2)
+                    score -= abs(j - (len(state[0])-1)/2) * self.mode[6]
         
-
+        return score
 
     def stateScoreEval(self,state):
         score = 0

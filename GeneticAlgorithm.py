@@ -12,7 +12,7 @@ class GeneticAlgorithm:
         self.selectionRate = selectionRate
         self.crossoverRate = crossoverRate
         self.numberOfWeights = numberOfWeights
-        self.populationFitness = [] #number of wins for each individual
+        self.populationFitness = [] 
         self.unseenPopulation = []
         self.nextGeneration = []
 
@@ -33,7 +33,8 @@ class GeneticAlgorithm:
          
 
     def simulate(self,numberOfGames):
-        for _ in range(numberOfGames):
+        for i in range(numberOfGames):
+            print('round: ',i+1)
             self.unseenPopulation = self.population.copy()
             while len(self.unseenPopulation) != 0:
                 ai1 = self.getRandomIndividual()
@@ -59,9 +60,9 @@ class GeneticAlgorithm:
         for i in range(self.populationSize):
             fitnessMappping[i] = self.populationFitness[i]
         fitnessMappping = sorted(fitnessMappping.items(), key=lambda x: x[1], reverse=True)
-        for i in range(self.populationSize*self.selectionRate):
+        for i in range(int(self.populationSize*self.selectionRate)):
             self.nextGeneration.append(self.population[fitnessMappping[i][0]])
-        
+        print('best of generation: ',self.population[fitnessMappping[i][0]])
     def crossoverIndividuals(self,parent1,parent2):
         child = []
         for i in range(self.numberOfWeights):
@@ -72,14 +73,14 @@ class GeneticAlgorithm:
         return child
 
     def crossover(self):
-        for i in range(self.populationSize*self.crossoverRate):
+        for i in range(int(self.populationSize*self.crossoverRate)):
             parent1 = random.choice(self.nextGeneration)
             parent2 = random.choice(self.nextGeneration)
             child = self.crossoverIndividuals(parent1,parent2)
             self.nextGeneration.append(child)
 
     def mutation(self):
-        for i in range(self.populationSize*self.mutationRate):
+        for i in range(int(int(self.populationSize*self.mutationRate))):
             individual = random.choice(self.nextGeneration)
             index = random.randint(0,self.numberOfWeights-1)
             individual[index] += random.randint(-2,2)
@@ -88,19 +89,22 @@ class GeneticAlgorithm:
     def oneGeneration(self):
         self.nextGeneration = []
         self.populationFitness = [0 for i in range(self.populationSize)]
-        self.simulate(4)
+        self.simulate(3)
         self.selection()
         self.crossover()
         self.mutation()
         self.population = self.nextGeneration.copy()
-        print(max(self.populationFitness))
 
-    def run(self,numberOfGenerations):
-        self.createPopulation()
+    def run(self,numberOfGenerations,train='new'):
+        if train == 'new':
+            self.createPopulation()
+        else:
+            self.loadGeneration()
         for i in range(numberOfGenerations):
+            print('gen: ',i+1)
             self.oneGeneration()
+            self.saveGeneration()
         
-        self.saveGeneration()
     
     def saveGeneration(self):
         df = pd.DataFrame(self.population)
@@ -109,7 +113,7 @@ class GeneticAlgorithm:
     def loadGeneration(self):
         df = pd.read_csv('generation.csv')
         self.population = df.values.tolist()
-        
+
     def bestIndividual(self):
         fitnessMappping = {}
         for i in range(self.populationSize):
@@ -118,8 +122,12 @@ class GeneticAlgorithm:
         bestIndividual = self.population[fitnessMappping[0][0]]
         return bestIndividual
 
-def main():
-    ga = GeneticAlgorithm(populationSize=100,mutationRate=0.2,selectionRate=0.5,crossoverRate=0.3,numberOfWeights=16)
-    ga.run(100)
+def main(train='new'):
+    ga = GeneticAlgorithm(populationSize=100,mutationRate=0.2,selectionRate=0.5,crossoverRate=0.3,numberOfWeights=7)
+    ga.run(10,train)
     ga.saveGeneration()
     print(ga.bestIndividual())
+
+
+if __name__ == '__main__':
+    main('new')

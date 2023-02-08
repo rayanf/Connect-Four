@@ -11,6 +11,7 @@ class game:
         self.m = m
         self.mode = mode
 
+
         pygame.init()
         self.screen = pygame.display.set_mode((m*90,n*90))
         self.fps = 60
@@ -36,7 +37,7 @@ class game:
         self.drawLines()
 
         pygame.display.update()
-        pygame.image.save(self.screen, "screenshot.jpeg")
+        # pygame.image.save(self.screen, "screenshot.jpeg")
 
     def drawPieces(self):
         for i in range(self.n):
@@ -80,7 +81,8 @@ class game:
     
     def reset(self):
         self.board = np.zeros((self.n,self.m))
-        self.updateScreen()
+        if self.mode == 'MinMax':
+            self.updateScreen()
     
     def playerVsAI(self,mode,modeGame = 'MinMax'):
         if modeGame == 'MinMax':
@@ -195,8 +197,6 @@ class game:
 
             turn = True
             while True:
-                self.updateScreen()
-
 
                 win = self.checkWin()
                 tie = self.checkTie()
